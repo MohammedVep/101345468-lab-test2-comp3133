@@ -1,46 +1,34 @@
+
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
-import { Observable } from 'rxjs';
-import { Mission } from '../models/mission'
+import { Observable, retry } from 'rxjs';
+import { Mission } from '../models/mission';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpacexapiService {
+ 
+  private REST_API_URL = "https://api.spacexdata.com/v3/launches";
 
-  missions$: any
+  constructor(private httpClient: HttpClient, private router: Router) { }
 
-  missions: Mission[] = []
-
-  private missionsUrl = 'https://api.spacexdata.com/v3/launches'
-
-  constructor(private http: HttpClient) { }
-
-  fetchRawData(): Observable<Object> {
-    return this.http.get(this.missionsUrl)
+  public navigate(commands: any[], extras?: { state: { mission: Mission } }): void {
+    this.router.navigate(commands, extras);
   }
 
-  fetchMissions() {
-    this.missions$ = this.fetchRawData()
-    return this.getMissionsData()
+  public getAllList(): Observable<Mission[]> {
+    return this.httpClient.get<Mission[]>(this.REST_API_URL).pipe(retry(3))
+  }
+  public getFilteredMissionsByYear(launch_year: string) : Observable<Mission[]> {
+    const FILTER_MISSION = `https://api.spacexdata.com/v3/launches?launch_year=${launch_year}`
+    return this.httpClient.get<Mission[]>(FILTER_MISSION).pipe(retry(3))
   }
 
-  getMissionsData(): Mission[] {
-    this.missions$.forEach((element: any) => {
-      element.forEach((eachMission: any) => {
-        const { flight_number, mission_name, launch_year, details, links } = eachMission
-        const mission_patch_small: string = links.mission_patch_small
-        const mission: Mission = { flight_number, mission_name, launch_year, details, mission_patch_small}
-        this.missions.push(mission)
-      })
-    });
-    return this.missions
+  public getMissionListDetailsByFlightNumber(flight_number: string) : Observable<Mission> {
+    const FILTER_BY_FLIGHT = `https://api.spacexdata.com/v3/launches/${flight_number}`
+    return this.httpClient.get<Mission>(FILTER_BY_FLIGHT).pipe(retry(3))
   }
-
-  findMission(id: number): any {
-    const allMissions = this.fetchMissions()
-    return allMissions.find(mission => mission.flight_number == id)
-
-  }
-
+  
 }

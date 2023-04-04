@@ -1,25 +1,21 @@
-<h2 class="page-title">SpaceX Mission Details</h2>
-<div class="button-wrapper">
-  <button class="back-button" mat-button color="accent" (click)="goBack()">Back</button>
-</div>
 <div *ngIf="mission">
-  <div class="main-card">
-    <mat-card class="example-card">
-      <mat-card-header>
-        <img
-          class="example-header-image"
-          src="{{ mission.mission_patch_small }}"
-        />
-        <mat-card-title><strong>Name:</strong> {{ mission.mission_name }}</mat-card-title>
-        <mat-card-subtitle>
-            <strong>Launch year:</strong> {{ mission.launch_year }}
-        </mat-card-subtitle>
-      </mat-card-header>
+  <div class="mission-details">
+    <img src="{{ mission.links.mission_patch_small }}" alt="{{ mission.mission_name }} logo" class="mission-image">
+    <h2>Mission - {{ mission.mission_name }}</h2>
+    <div>Name: {{ mission.mission_name }} </div>
+    <div>Launch Year: {{ mission.launch_year }}</div>
 
-      <mat-card-content>
-        <p><strong>Launch Details</strong></p>
-        <p>{{ mission.details }}</p>
-      </mat-card-content>
-    </mat-card>
+    <h2>Rocket:</h2>
+      <div>Name: {{ mission.rocket.rocket_name }} </div>
+      <div>Type: {{ mission.rocket.rocket_type }} </div>
+    
+
+    <h2>Launch Site:</h2>
+      <div>Name: {{ mission.launch_site.site_name_long }} </div>
+
+    <h2>Launch Details:</h2>
+      <div>Mission Details: {{ mission.details }}</div>
+    
+
   </div>
 </div>
